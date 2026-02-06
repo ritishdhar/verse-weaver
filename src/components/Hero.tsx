@@ -113,14 +113,9 @@ export const Hero = () => {
               className="w-full h-full flex justify-center items-end"
             >
               <img
-                src="/images/designer-portrait-v2-transparent.png"
-                alt="Ritish Dhar Portrait"
-                className="hidden md:block w-full h-auto max-h-[110%] object-contain object-bottom scale-110 md:scale-135 transform translate-y-4"
-              />
-              <img
                 src="/images/mobile-hero.png"
                 alt="Ritish Dhar Portrait"
-                className="block md:hidden w-full h-auto max-h-[100%] object-contain object-bottom scale-[1.8] transform translate-y-20"
+                className="w-full h-auto max-h-[110%] md:max-h-[100%] object-contain object-bottom scale-[1.8] md:scale-[1.35] transform translate-y-20 md:translate-y-4"
               />
             </motion.div>
 
