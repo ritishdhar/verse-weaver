@@ -6,6 +6,8 @@ interface MagneticButtonProps {
   className?: string;
   onClick?: () => void;
   strength?: number;
+  type?: 'button' | 'submit' | 'reset';
+  disabled?: boolean;
 }
 
 export const MagneticButton = ({
@@ -13,6 +15,8 @@ export const MagneticButton = ({
   className = '',
   onClick,
   strength = 0.3,
+  type = 'button',
+  disabled = false,
 }: MagneticButtonProps) => {
   const ref = useRef<HTMLButtonElement>(null);
   
@@ -42,14 +46,23 @@ export const MagneticButton = ({
     y.set(0);
   };
 
+  const handlePointerUp = () => {
+    x.set(0);
+    y.set(0);
+  };
+
   return (
     <motion.button
       ref={ref}
+      type={type}
+      disabled={disabled}
       style={{ x: springX, y: springY }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
+      onPointerUp={handlePointerUp}
+      onPointerLeave={handleMouseLeave}
       onClick={onClick}
-      className={`magnetic-button ${className}`}
+      className={`magnetic-button inline-block ${className}`}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
     >

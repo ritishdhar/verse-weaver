@@ -141,6 +141,7 @@ export const NovelSocial = () => {
 
     const handleDeleteComment = async (commentId: string) => {
         if (!visitorId) return;
+        if (!window.confirm('Are you sure you want to delete this comment?')) return;
         try {
             const { error } = await supabase
                 .from('comments')
@@ -273,7 +274,7 @@ export const NovelSocial = () => {
                                         key={comment.id}
                                         initial={{ opacity: 0, x: -20 }}
                                         animate={{ opacity: 1, x: 0 }}
-                                        className="bg-white/5 border border-white/5 rounded-2xl p-4 space-y-2 text-left group/comment"
+                                        className="bg-white/5 border border-white/5 rounded-2xl p-4 space-y-2 text-left"
                                     >
                                         <div className="flex justify-between items-start gap-2 text-left">
                                             <div className="flex flex-wrap items-center gap-2 min-w-0">
@@ -284,7 +285,7 @@ export const NovelSocial = () => {
                                                 <button
                                                     type="button"
                                                     onClick={() => handleDeleteComment(comment.id)}
-                                                    className="shrink-0 p-1.5 rounded-full text-white/30 hover:text-white hover:bg-white/10 transition-colors opacity-0 group-hover/comment:opacity-100"
+                                                    className="shrink-0 p-1.5 rounded-full text-white/40 hover:text-white hover:bg-white/10 transition-colors"
                                                     title="Delete comment"
                                                 >
                                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

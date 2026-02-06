@@ -46,6 +46,19 @@ export const Hero = () => {
       {/* Main Content Container */}
       <div className="container-wide relative z-10 flex flex-col items-center">
 
+        {/* Inspired by TV Girl Note */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+          className="flex items-center justify-center gap-3 bg-white/10 backdrop-blur-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-white/20 mb-4"
+        >
+          <div className="w-2 h-2 rounded-full bg-white shadow-[0_0_10px_white]" />
+          <p className="font-body text-[10px] sm:text-[12px] font-bold uppercase tracking-[0.2em] text-white text-center">
+            Inspired by TV Girl
+          </p>
+        </motion.div>
+
         {/* "meet the" Text Box */}
         <motion.div
           initial={{ opacity: 0, x: -100 }}
@@ -190,19 +203,6 @@ export const Hero = () => {
         <svg viewBox="0 0 100 100" fill="currentColor">
           <path d="M50 0L61.2 38.8L100 50L61.2 61.2L50 100L38.8 61.2L0 50L38.8 38.8L50 0Z" />
         </svg>
-      </motion.div>
-
-      {/* Inspired by TV Girl Note */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-        className="absolute top-[92vh] right-4 sm:right-10 z-[50] flex items-center gap-3 bg-white/10 backdrop-blur-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-white/20 scale-90 sm:scale-100"
-      >
-        <div className="w-2 h-2 rounded-full bg-white shadow-[0_0_10px_white]" />
-        <p className="font-body text-[10px] sm:text-[12px] font-bold uppercase tracking-[0.2em] text-white">
-          Inspired by TV Girl
-        </p>
       </motion.div>
     </motion.section>
   );

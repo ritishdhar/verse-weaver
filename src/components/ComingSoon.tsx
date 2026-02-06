@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { AnimatedSection } from './AnimatedSection';
 import { MagneticButton } from './MagneticButton';
 import { StarBackground } from './StarBackground';
 import { SectionDivider } from './SectionDivider';
+import { supabase } from '@/lib/supabase';
 
 const upcomingWorks = [
   {
@@ -20,6 +22,34 @@ const upcomingWorks = [
 ];
 
 export const ComingSoon = () => {
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  const handleStayUpdated = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = email.trim().toLowerCase();
+    if (!trimmed) return;
+    setMessage(null);
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from('newsletter_signups')
+        .insert({ email: trimmed });
+      if (error) throw error;
+      setMessage({ type: 'success', text: "You're on the list. We'll be in touch." });
+      setEmail('');
+    } catch (err) {
+      console.error('Newsletter signup error:', err);
+      const msg = err && typeof err === 'object' && 'message' in err
+        ? String((err as { message: string }).message)
+        : 'Something went wrong. Try again.';
+      setMessage({ type: 'error', text: msg });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <section id="coming-soon" className="section-padding relative bg-zine-blue z-10">
       <StarBackground
@@ -80,22 +110,35 @@ export const ComingSoon = () => {
           ))}
         </div>
 
-        {/* Newsletter */}
+        {/* Newsletter - stores emails in Supabase table newsletter_signups (email, created_at) */}
         <AnimatedSection delay={0.3} className="px-4 sm:px-0">
           <div className="text-center max-w-xl mx-auto">
             <p className="font-display text-lg sm:text-xl text-muted-foreground italic mb-8">
               Be the first to know when new works are released
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <form onSubmit={handleStayUpdated} className="flex flex-col sm:flex-row gap-4 justify-center">
               <input
                 type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="Your email address"
-                className="px-6 py-4 bg-secondary border border-border rounded-full text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 transition-colors flex-1 max-w-sm mx-auto sm:mx-0 w-full"
+                disabled={loading}
+                className="px-6 py-4 bg-secondary border border-border rounded-full text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 transition-colors flex-1 max-w-sm mx-auto sm:mx-0 w-full disabled:opacity-60"
               />
-              <MagneticButton className="px-8 py-4 bg-primary text-primary-foreground rounded-full font-medium w-full sm:w-auto">
-                Stay Updated
+              <MagneticButton
+                type="submit"
+                disabled={loading}
+                className="px-8 py-4 bg-primary text-primary-foreground rounded-full font-medium w-full sm:w-auto disabled:opacity-60"
+              >
+                {loading ? 'Saving…' : 'Stay Updated'}
               </MagneticButton>
-            </div>
+            </form>
+            {message && (
+              <p className={`mt-4 text-sm ${message.type === 'success' ? 'text-primary' : 'text-destructive'}`}>
+                {message.text}
+              </p>
+            )}
           </div>
         </AnimatedSection>
       </div>
