@@ -6,12 +6,13 @@ import { StarBackground } from './StarBackground';
 import { SectionDivider } from './SectionDivider';
 import { PDFViewer } from './PDFViewer';
 import { NovelSocial } from './NovelSocial';
-import { getReadingProgressKey } from '../lib/visitor';
+import { getReadingProgressKey, getReadingTotalPagesKey } from '../lib/visitor';
 
 export const FeaturedNovel = () => {
   const sectionRef = useRef(null);
   const [isPDFOpen, setIsPDFOpen] = useState(false);
   const [hasProgress, setHasProgress] = useState(false);
+  const [readPercent, setReadPercent] = useState<number | null>(null);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -21,11 +22,21 @@ export const FeaturedNovel = () => {
   const y = useTransform(scrollYProgress, [0, 1], [100, -100]);
   const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0, 1, 1, 0]);
 
-  // Check if there's saved reading progress
+  // Read progress from localStorage (current page + total pages)
   useEffect(() => {
-    const savedProgress = localStorage.getItem(getReadingProgressKey());
-    setHasProgress(savedProgress !== null && savedProgress !== '0');
-  }, [isPDFOpen]); // Re-check when modal closes
+    const current = localStorage.getItem(getReadingProgressKey());
+    const total = localStorage.getItem(getReadingTotalPagesKey());
+    const hasAny = current !== null && current !== '0' && total !== null;
+    setHasProgress(hasAny);
+    if (hasAny && current && total) {
+      const cur = parseInt(current, 10);
+      const tot = parseInt(total, 10);
+      if (tot > 0) setReadPercent(Math.round((cur / tot) * 100));
+      else setReadPercent(null);
+    } else {
+      setReadPercent(null);
+    }
+  }, [isPDFOpen]);
 
   return (
     <section
@@ -123,10 +134,29 @@ export const FeaturedNovel = () => {
                 Do You Hate Me?
               </h2>
               <p className="font-display text-lg sm:text-xl md:text-2xl text-muted-foreground italic leading-relaxed">
-                "A raw exploration of love, longing, and the questions we're afraid to ask.
-                Through verse and vulnerability, these poems ask what we all wonder in silence."
+                A poetic novel in verse—about unrequited love, desperation, and the grey zone of situationships. Raw, intimate, and full of the questions we’re afraid to ask out loud.
               </p>
             </AnimatedSection>
+
+            {/* Reading progress outside viewer - responsive */}
+            {readPercent !== null && (
+              <AnimatedSection delay={0.4} className="w-full max-w-md mx-auto lg:mx-0">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs sm:text-sm">
+                    <span className="text-muted-foreground uppercase tracking-widest">Your progress</span>
+                    <span className="font-bold text-primary">{readPercent}%</span>
+                  </div>
+                  <div className="h-2 w-full bg-white/10 rounded-full overflow-hidden">
+                    <motion.div
+                      className="h-full bg-primary rounded-full"
+                      initial={false}
+                      animate={{ width: `${readPercent}%` }}
+                      transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                    />
+                  </div>
+                </div>
+              </AnimatedSection>
+            )}
 
             <AnimatedSection delay={0.6}>
               <div className="flex justify-center lg:justify-start">

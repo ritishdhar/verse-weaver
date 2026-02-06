@@ -42,3 +42,8 @@ export const getReadingProgressKey = () => {
     const vid = getVisitorId();
     return `pdf_position_${vid}`;
 };
+
+export const getReadingTotalPagesKey = () => {
+    const vid = getVisitorId();
+    return `pdf_total_pages_${vid}`;
+};

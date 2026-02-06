@@ -326,8 +326,10 @@ export const NovelSocial = () => {
                 comments={comments}
                 visitorId={visitorId}
                 visitorName={visitorName}
+                isAnonymous={isAnonymous}
                 onAddComment={handleAddComment}
                 onDeleteComment={handleDeleteComment}
+                onUpdateName={handleUpdateName}
                 formatTime={formatTime}
                 isLoading={isLoading}
             />

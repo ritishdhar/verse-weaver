@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
-import { useEffect } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 interface Comment {
     id: string;
@@ -16,8 +16,10 @@ interface CommentOverlayProps {
     comments: Comment[];
     visitorId: string | null;
     visitorName: string;
+    isAnonymous?: boolean;
     onAddComment: (text: string) => Promise<void>;
     onDeleteComment: (commentId: string) => Promise<void>;
+    onUpdateName: (newName: string) => void;
     formatTime: (date: string) => string;
     isLoading: boolean;
 }
@@ -28,17 +30,30 @@ export const CommentOverlay = ({
     comments,
     visitorId,
     visitorName,
+    isAnonymous = false,
     onAddComment,
     onDeleteComment,
+    onUpdateName,
     formatTime,
     isLoading
 }: CommentOverlayProps) => {
+    const [isEditingName, setIsEditingName] = useState(false);
+    const [tempName, setTempName] = useState(visitorName);
+    const nameInputRef = useRef<HTMLInputElement>(null);
+
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = 'hidden';
+            setTempName(visitorName);
             return () => { document.body.style.overflow = ''; };
         }
-    }, [isOpen]);
+    }, [isOpen, visitorName]);
+
+    useEffect(() => {
+        if (isEditingName && nameInputRef.current) {
+            requestAnimationFrame(() => nameInputRef.current?.focus({ preventScroll: true }));
+        }
+    }, [isEditingName]);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -92,7 +107,7 @@ export const CommentOverlay = ({
                                         key={comment.id}
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        className="bg-white/5 border border-white/5 rounded-2xl p-4 space-y-2 group/comment"
+                                        className="bg-white/5 border border-white/5 rounded-2xl p-4 space-y-2"
                                     >
                                         <div className="flex justify-between items-start gap-2 text-left">
                                             <div className="flex flex-wrap items-center gap-2 min-w-0">
@@ -128,14 +143,47 @@ export const CommentOverlay = ({
 
                         {/* Input Footer */}
                         <div className="p-6 bg-zinc-900 border-t border-white/10">
-                            <div className="flex items-center justify-between mb-4">
-                                <div className="flex items-center gap-3">
-                                    <span className="text-[10px] text-white/40 uppercase tracking-widest">Posting as:</span>
-                                    <span className="text-primary text-[10px] font-bold">
-                                        {visitorName.toUpperCase()}
-                                    </span>
+                            <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+                                <div className="flex items-center gap-2 min-w-0 flex-1">
+                                    <span className="text-[10px] text-white/40 uppercase tracking-widest shrink-0">Posting as:</span>
+                                    {isEditingName ? (
+                                        <div className="flex items-center gap-2 min-w-0 flex-1">
+                                            <input
+                                                ref={nameInputRef}
+                                                type="text"
+                                                value={tempName}
+                                                onChange={(e) => setTempName(e.target.value)}
+                                                className="bg-white/5 border border-white/20 rounded-md px-2 py-1.5 text-xs text-white focus:outline-none focus:border-primary min-w-0 max-w-[140px] sm:max-w-[200px]"
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        onUpdateName(tempName);
+                                                        setIsEditingName(false);
+                                                    }
+                                                    if (e.key === 'Escape') setIsEditingName(false);
+                                                }}
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    onUpdateName(tempName);
+                                                    setIsEditingName(false);
+                                                }}
+                                                className="text-primary text-[10px] font-bold shrink-0"
+                                            >
+                                                Save
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            type="button"
+                                            onClick={() => setIsEditingName(true)}
+                                            className="text-primary text-[10px] font-bold hover:underline truncate"
+                                        >
+                                            {(isAnonymous ? 'Anonymous' : visitorName).toUpperCase()}
+                                        </button>
+                                    )}
                                 </div>
-                                <p className="text-[10px] text-white/20 uppercase tracking-widest">
+                                <p className="text-[10px] text-white/20 uppercase tracking-widest shrink-0">
                                     ID: {visitorId?.slice(0, 8)}...
                                 </p>
                             </div>

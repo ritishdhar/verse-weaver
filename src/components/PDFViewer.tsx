@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Document, Page, pdfjs } from 'react-pdf';
-import { getReadingProgressKey } from '../lib/visitor';
+import { getReadingProgressKey, getReadingTotalPagesKey } from '../lib/visitor';
 
 // Configure PDF.js worker
 pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -73,6 +73,7 @@ export const PDFViewer = ({ isOpen, onClose, pdfUrl }: PDFViewerProps) => {
 
     const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
         setNumPages(numPages);
+        localStorage.setItem(getReadingTotalPagesKey(), numPages.toString());
     };
 
     // Save reading position
@@ -225,15 +226,19 @@ export const PDFViewer = ({ isOpen, onClose, pdfUrl }: PDFViewerProps) => {
                     transition={{ duration: 0.3 }}
                 >
                     {/* Header */}
-                    <div className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between px-4 sm:px-6 py-4 bg-zinc-900/80 backdrop-blur-md border-b border-white/10">
-                        <div className="flex items-center gap-4">
-                            <h3 className="font-display text-lg sm:text-xl text-white truncate max-w-[150px] sm:max-w-xs">
-                                Do You Hate Me?
-                            </h3>
-                            <span className="text-xs sm:text-sm text-white/60">
-                                {isMobile ? `Page ${currentPage}` : `Pages ${currentPage}-${Math.min(currentPage + 1, numPages)}`} of {numPages}
-                            </span>
-                        </div>
+                    <div className="absolute top-0 left-0 right-0 z-50 bg-zinc-900/80 backdrop-blur-md border-b border-white/10">
+                        <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4">
+                            <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+                                <h3 className="font-display text-lg sm:text-xl text-white truncate max-w-[120px] sm:max-w-xs">
+                                    Do You Hate Me?
+                                </h3>
+                                <span className="text-xs sm:text-sm text-white/60 shrink-0">
+                                    {isMobile ? `Page ${currentPage}` : `Pages ${currentPage}-${Math.min(currentPage + 1, numPages)}`} of {numPages}
+                                </span>
+                                <span className="text-[10px] sm:text-xs text-primary font-bold shrink-0">
+                                    {numPages ? Math.round((currentPage / numPages) * 100) : 0}% read
+                                </span>
+                            </div>
 
                         <div className="flex items-center gap-2 sm:gap-4">
                             {/* Fullscreen Toggle */}
@@ -255,11 +260,23 @@ export const PDFViewer = ({ isOpen, onClose, pdfUrl }: PDFViewerProps) => {
                                 </svg>
                             </button>
                         </div>
+                        </div>
+                        {/* Reading progress bar - responsive full width */}
+                        <div className="px-4 sm:px-6 pb-2 sm:pb-3">
+                            <div className="h-1.5 sm:h-2 w-full bg-white/10 rounded-full overflow-hidden">
+                                <motion.div
+                                    className="h-full bg-primary rounded-full"
+                                    initial={false}
+                                    animate={{ width: numPages ? `${(currentPage / numPages) * 100}%` : '0%' }}
+                                    transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                                />
+                            </div>
+                        </div>
                     </div>
 
                     {/* Book Content */}
                     <div
-                        className="w-full h-full pt-16 pb-20 flex items-center justify-center overflow-hidden"
+                        className="w-full h-full pt-20 sm:pt-24 pb-20 flex items-center justify-center overflow-hidden"
                         onTouchStart={onTouchStart}
                         onTouchMove={onTouchMove}
                         onTouchEnd={onTouchEnd}
