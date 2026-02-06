@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { CommentOverlay } from './CommentOverlay';
 import { getVisitorId, getVisitorName, getIsAnonymous, setIsAnonymous, setVisitorName as setStoredVisitorName } from '../lib/visitor';
@@ -24,6 +24,17 @@ export const NovelSocial = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [isOverlayOpen, setIsOverlayOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
+    const nameInputRef = useRef<HTMLInputElement>(null);
+
+    // Focus name input without scrolling the page (fixes mobile layout jump)
+    useEffect(() => {
+        if (isEditingName && nameInputRef.current) {
+            const input = nameInputRef.current;
+            requestAnimationFrame(() => {
+                input.focus({ preventScroll: true });
+            });
+        }
+    }, [isEditingName]);
 
     // Initialize Visitor ID and Fetch Data
     useEffect(() => {
@@ -190,19 +201,19 @@ export const NovelSocial = () => {
                         <div className="flex items-center gap-3">
                             <span className="text-[10px] text-white/40 uppercase tracking-widest">Posting as:</span>
                             {isEditingName ? (
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2 min-w-0 flex-1 justify-end">
                                     <input
+                                        ref={nameInputRef}
                                         type="text"
                                         value={tempName}
                                         onChange={(e) => setTempName(e.target.value)}
-                                        className="bg-white/5 border border-white/20 rounded-md px-2 py-1 text-xs text-white focus:outline-none focus:border-primary"
-                                        autoFocus
+                                        className="bg-white/5 border border-white/20 rounded-md px-2 py-1 text-xs text-white focus:outline-none focus:border-primary min-w-0 max-w-[140px] sm:max-w-[200px]"
                                         onKeyDown={(e) => {
                                             if (e.key === 'Enter') handleUpdateName(tempName);
                                             if (e.key === 'Escape') setIsEditingName(false);
                                         }}
                                     />
-                                    <button onClick={() => handleUpdateName(tempName)} className="text-primary text-[10px] font-bold">SAVE</button>
+                                    <button type="button" onClick={() => handleUpdateName(tempName)} className="text-primary text-[10px] font-bold shrink-0">SAVE</button>
                                 </div>
                             ) : (
                                 <button
