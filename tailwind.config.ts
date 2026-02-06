@@ -53,10 +53,19 @@ export default {
         "gold-muted": "hsl(var(--gold-muted))",
         charcoal: "hsl(var(--charcoal))",
         "charcoal-light": "hsl(var(--charcoal-light))",
+        "neon-cyan": "#00f0ff",
+        "neon-green": "#00ff9d",
+        "zine-pink": "#E13088",
+        "zine-pink-light": "#f444a0",
+        "zine-blue": "#1a2c75",
+        "zine-blue-dark": "#0d163f",
       },
       fontFamily: {
         display: ["Playfair Display", "Georgia", "serif"],
         body: ["Inter", "system-ui", "sans-serif"],
+        bebas: ["Bebas Neue", "system-ui", "sans-serif"],
+        myriad: ["Myriad Pro", "system-ui", "sans-serif"],
+        prata: ["Prata", "serif"],
       },
       fontSize: {
         // Display sizes for hero

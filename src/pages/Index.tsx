@@ -6,21 +6,27 @@ import { AboutWriter } from '@/components/AboutWriter';
 import { WritingPhilosophy } from '@/components/WritingPhilosophy';
 import { ComingSoon } from '@/components/ComingSoon';
 import { Footer } from '@/components/Footer';
+import { Preloader } from '@/components/Preloader';
+import { PromoNotification } from '@/components/PromoNotification';
 
 const Index = () => {
   // Initialize smooth scrolling
   useSmoothScroll();
 
   return (
-    <main className="min-h-screen bg-background">
-      <Navbar />
-      <Hero />
-      <FeaturedNovel />
-      <AboutWriter />
-      <WritingPhilosophy />
-      <ComingSoon />
-      <Footer />
-    </main>
+    <>
+      <Preloader />
+      <PromoNotification />
+      <main className="min-h-screen bg-background">
+        <Navbar />
+        <Hero />
+        <FeaturedNovel />
+        <AboutWriter />
+        <WritingPhilosophy />
+        <ComingSoon />
+        <Footer />
+      </main>
+    </>
   );
 };
 
