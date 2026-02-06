@@ -6,14 +6,7 @@ export const PromoNotification = () => {
     const [isDismissed, setIsDismissed] = useState(false);
 
     useEffect(() => {
-        // Check if dismissed in this session
-        const dismissed = sessionStorage.getItem('promo_dismissed');
-        if (dismissed) {
-            setIsDismissed(true);
-            return;
-        }
-
-        // Show after a delay
+        // Show notification after delay on every page load (no sessionStorage)
         const timer = setTimeout(() => {
             setIsVisible(true);
         }, 3000); // 3 seconds delay
@@ -24,7 +17,6 @@ export const PromoNotification = () => {
     const handleDismiss = () => {
         setIsVisible(false);
         setIsDismissed(true);
-        sessionStorage.setItem('promo_dismissed', 'true');
     };
 
     const handleAction = () => {

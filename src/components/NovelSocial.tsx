@@ -230,19 +230,19 @@ export const NovelSocial = () => {
                         e.preventDefault();
                         handleAddComment(newComment);
                         setNewComment('');
-                    }} className="flex gap-4">
+                    }} className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                         <input
                             type="text"
                             value={newComment}
                             onChange={(e) => setNewComment(e.target.value)}
                             placeholder="Share your thoughts..."
-                            className="flex-1 bg-white/5 border border-white/10 rounded-full px-6 py-3 text-white placeholder:text-white/20 focus:outline-none focus:border-primary/50 transition-all font-body text-sm text-left"
+                            className="flex-1 min-w-0 w-full sm:w-auto bg-white/5 border border-white/10 rounded-full px-6 py-3 text-white placeholder:text-white/20 focus:outline-none focus:border-primary/50 transition-all font-body text-sm text-left"
                         />
                         <motion.button
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             type="submit"
-                            className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-full font-bold text-sm transition-all border border-white/10"
+                            className="w-full sm:w-auto shrink-0 px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-full font-bold text-sm transition-all border border-white/10"
                         >
                             Post
                         </motion.button>

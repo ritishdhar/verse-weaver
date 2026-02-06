@@ -63,7 +63,7 @@ export const Preloader = () => {
 
 
 
-                    {/* Loader Content */}
+                    {/* Loader Content - percentage and bar only */}
                     <div className="relative text-center">
                         <motion.span
                             className="block font-display text-8xl md:text-9xl text-white font-bold tracking-tighter"
@@ -80,26 +80,7 @@ export const Preloader = () => {
                                 style={{ width: `${progress}%` }}
                             />
                         </div>
-
-                        <motion.p
-                            className="mt-6 font-body text-xs uppercase tracking-[0.5em] text-white/40"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 0.5 }}
-                        >
-                            Ritish Dhar • Verse Weaver
-                        </motion.p>
                     </div>
-
-                    {/* Decorative Elements */}
-                    <motion.div
-                        className="absolute bottom-12 left-12 flex gap-4"
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                    >
-                        <div className="w-12 h-[1px] bg-white/20 mt-3" />
-                        <span className="font-body text-[10px] text-white/30 uppercase tracking-widest">Loading Experience</span>
-                    </motion.div>
                 </motion.div>
             )}
         </AnimatePresence>
