@@ -30,12 +30,14 @@ export const PromoNotification = () => {
     return (
         <AnimatePresence>
             {isVisible && !isDismissed && (
-                <motion.div
-                    initial={{ x: 100, opacity: 0, scale: 0.8 }}
-                    animate={{ x: 0, opacity: 1, scale: 1 }}
-                    exit={{ x: 100, opacity: 0, scale: 0.8 }}
-                    className="fixed bottom-6 right-6 z-[60] w-[300px] sm:w-[350px]"
-                >
+                <div className="fixed inset-x-0 bottom-6 z-[60] flex justify-center px-4 pointer-events-none">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                        className="w-[300px] sm:w-[350px] max-w-[calc(100vw-2rem)] pointer-events-auto"
+                    >
                     <div className="relative group">
                         {/* Glow background */}
                         <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/50 to-zine-blue/50 rounded-2xl blur opacity-30 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
@@ -76,7 +78,8 @@ export const PromoNotification = () => {
                             </button>
                         </div>
                     </div>
-                </motion.div>
+                    </motion.div>
+                </div>
             )}
         </AnimatePresence>
     );
