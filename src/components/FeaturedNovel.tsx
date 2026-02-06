@@ -48,58 +48,60 @@ export const FeaturedNovel = () => {
         ]}
       />
       <div className="container-wide relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+        <div className="flex flex-col lg:grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Book Cover */}
-          <motion.div
-            className="relative"
-            style={{ y }}
-          >
-            <AnimatedSection>
-              <div className="relative mx-auto w-[280px] sm:w-[350px] md:w-[450px] max-w-full">
-                {/* Book shadow */}
-                <div className="absolute inset-0 translate-x-4 translate-y-4 bg-gradient-to-br from-charcoal-light to-charcoal rounded-lg" />
+          <div className="w-full flex justify-center lg:justify-start">
+            <motion.div
+              className="relative"
+              style={{ y }}
+            >
+              <AnimatedSection>
+                <div className="relative mx-auto w-[280px] sm:w-[350px] md:w-[450px] max-w-full">
+                  {/* Book shadow */}
+                  <div className="absolute inset-0 translate-x-4 translate-y-4 bg-gradient-to-br from-charcoal-light to-charcoal rounded-lg" />
 
-                {/* Book cover with actual image */}
-                <div className="relative aspect-[2/3] rounded-lg border border-border overflow-hidden group">
-                  {/* Cover Image */}
-                  <img
-                    src="/images/do-you-hate-me-cover.jpg"
-                    alt="Do You Hate Me? by Ritish Dhar"
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
+                  {/* Book cover with actual image */}
+                  <div className="relative aspect-[2/3] rounded-lg border border-border overflow-hidden group">
+                    {/* Cover Image */}
+                    <img
+                      src="/images/do-you-hate-me-cover.jpg"
+                      alt="Do You Hate Me? by Ritish Dhar"
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
 
-                  {/* Shimmer Effect */}
+                    {/* Shimmer Effect */}
+                    <motion.div
+                      className="absolute inset-0 z-20 pointer-events-none"
+                      initial={{ x: '-100%' }}
+                      animate={{ x: '200%' }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        repeatDelay: 4,
+                        ease: "easeInOut"
+                      }}
+                      style={{
+                        background: 'linear-gradient(90deg, transparent, rgba(225, 48, 136, 0.1), transparent)'
+                      }}
+                    />
+
+                    {/* Subtle overlay on hover */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10" />
+                  </div>
+
+                  {/* Floating accent */}
                   <motion.div
-                    className="absolute inset-0 z-20 pointer-events-none"
-                    initial={{ x: '-100%' }}
-                    animate={{ x: '200%' }}
-                    transition={{
-                      duration: 3,
-                      repeat: Infinity,
-                      repeatDelay: 4,
-                      ease: "easeInOut"
-                    }}
-                    style={{
-                      background: 'linear-gradient(90deg, transparent, rgba(225, 48, 136, 0.1), transparent)'
-                    }}
+                    className="absolute -top-6 -right-6 w-24 h-24 border border-primary/30 rounded-full"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
                   />
-
-                  {/* Subtle overlay on hover */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10" />
                 </div>
-
-                {/* Floating accent */}
-                <motion.div
-                  className="absolute -top-6 -right-6 w-24 h-24 border border-primary/30 rounded-full"
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-                />
-              </div>
-            </AnimatedSection>
-          </motion.div>
+              </AnimatedSection>
+            </motion.div>
+          </div>
 
           {/* Content */}
-          <div className="space-y-8 text-center lg:text-left px-4 sm:px-0">
+          <div className="space-y-8 text-center lg:text-left w-full flex flex-col items-center lg:items-start">
             <AnimatedSection delay={0.2}>
               <div className="flex items-center gap-4 mb-4 justify-center lg:justify-start">
                 <div className="bg-black px-4 sm:px-6 py-1.5 sm:py-2 inline-block">
@@ -137,7 +139,7 @@ export const FeaturedNovel = () => {
               </div>
             </AnimatedSection>
 
-            <AnimatedSection delay={0.8}>
+            <AnimatedSection delay={0.8} className="w-full">
               <NovelSocial />
             </AnimatedSection>
           </div>

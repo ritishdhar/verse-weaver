@@ -1,5 +1,19 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600&family=Inter:wght@300;400;500;600&family=Prata&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+/* Self-hosted fonts via @fontsource – bundled with the app, no external requests */
+@import '@fontsource/playfair-display/latin-400.css';
+@import '@fontsource/playfair-display/latin-500.css';
+@import '@fontsource/playfair-display/latin-600.css';
+@import '@fontsource/playfair-display/latin-700.css';
+@import '@fontsource/playfair-display/latin-800.css';
+@import '@fontsource/playfair-display/latin-900.css';
+@import '@fontsource/playfair-display/latin-400-italic.css';
+@import '@fontsource/playfair-display/latin-500-italic.css';
+@import '@fontsource/playfair-display/latin-600-italic.css';
+@import '@fontsource/inter/latin-300.css';
+@import '@fontsource/inter/latin-400.css';
+@import '@fontsource/inter/latin-500.css';
+@import '@fontsource/inter/latin-600.css';
+@import '@fontsource/prata/latin-400.css';
+@import '@fontsource/bebas-neue/latin-400.css';
 
 @tailwind base;
 @tailwind components;
@@ -10,9 +24,8 @@
    Typography: Editorial, high-impact
 */
 
-/* The Bold Font - Add font files to public/fonts/ if you have them */
-/* For now using a similar bold font as fallback */
-/* 
+/* The Bold Font - Self-hosted custom font */
+/* Place font files in public/fonts/ directory */
 @font-face {
   font-family: 'The Bold Font';
   src: url('/fonts/TheBoldFont.woff2') format('woff2'),
@@ -21,8 +34,7 @@
   font-weight: normal;
   font-style: normal;
   font-display: swap;
-} 
-*/
+}
 
 @layer base {
   :root {

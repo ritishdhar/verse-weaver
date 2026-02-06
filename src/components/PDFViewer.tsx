@@ -16,7 +16,7 @@ interface PDFViewerProps {
 export const PDFViewer = ({ isOpen, onClose, pdfUrl }: PDFViewerProps) => {
     const [numPages, setNumPages] = useState<number>(0);
     const [currentPage, setCurrentPage] = useState<number>(1); // 1-indexed page number
-    const [scale, setScale] = useState<number>(0.6); // Higher default for better mobile read
+    const [scale, setScale] = useState<number>(0.2); // Default to 20% (minimum)
     const [mounted, setMounted] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
@@ -25,6 +25,11 @@ export const PDFViewer = ({ isOpen, onClose, pdfUrl }: PDFViewerProps) => {
     // Touch handling refs
     const touchStartX = useRef<number | null>(null);
     const touchEndX = useRef<number | null>(null);
+    
+    // Pinch zoom refs
+    const pinchStartDistance = useRef<number | null>(null);
+    const pinchStartScale = useRef<number>(0.2);
+    const isPinching = useRef<boolean>(false);
 
     // Initialize state and listeners
     useEffect(() => {
@@ -33,11 +38,9 @@ export const PDFViewer = ({ isOpen, onClose, pdfUrl }: PDFViewerProps) => {
         const checkMobile = () => {
             const mobile = window.innerWidth < 768;
             setIsMobile(mobile);
-            // Auto-adjust scale for mobile
-            if (mobile) {
-                setScale(Math.min(window.innerWidth / 500, 0.6));
-            } else {
-                if (scale < 0.25) setScale(0.4);
+            // Always start at 20% (0.2) regardless of device
+            if (scale !== 0.2) {
+                setScale(0.2);
             }
         };
 
@@ -95,6 +98,13 @@ export const PDFViewer = ({ isOpen, onClose, pdfUrl }: PDFViewerProps) => {
 
     const zoomIn = () => setScale((prev) => Math.min(prev + 0.1, 1.5));
     const zoomOut = () => setScale((prev) => Math.max(prev - 0.1, 0.2));
+    
+    // Calculate distance between two touch points
+    const getTouchDistance = (touch1: Touch, touch2: Touch): number => {
+        const dx = touch1.clientX - touch2.clientX;
+        const dy = touch1.clientY - touch2.clientY;
+        return Math.sqrt(dx * dx + dy * dy);
+    };
 
     const toggleFullscreen = () => {
         if (!document.fullscreenElement) {
@@ -115,6 +125,14 @@ export const PDFViewer = ({ isOpen, onClose, pdfUrl }: PDFViewerProps) => {
         return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
     }, []);
 
+    // Reset zoom to 20% when PDF viewer opens
+    useEffect(() => {
+        if (isOpen) {
+            setScale(0.2);
+            pinchStartScale.current = 0.2;
+        }
+    }, [isOpen]);
+
     // Scroll lock
     useEffect(() => {
         if (isOpen) {
@@ -125,29 +143,55 @@ export const PDFViewer = ({ isOpen, onClose, pdfUrl }: PDFViewerProps) => {
 
     // Touch Handlers
     const onTouchStart = (e: React.TouchEvent) => {
-        touchStartX.current = e.targetTouches[0].clientX;
+        // Pinch zoom detection (2 touches)
+        if (e.touches.length === 2) {
+            isPinching.current = true;
+            pinchStartDistance.current = getTouchDistance(e.touches[0], e.touches[1]);
+            pinchStartScale.current = scale;
+            // Prevent page swipe when pinching
+            touchStartX.current = null;
+            touchEndX.current = null;
+        } else if (e.touches.length === 1) {
+            // Single touch for page swipe
+            touchStartX.current = e.touches[0].clientX;
+            isPinching.current = false;
+        }
     };
 
     const onTouchMove = (e: React.TouchEvent) => {
-        touchEndX.current = e.targetTouches[0].clientX;
+        // Handle pinch zoom
+        if (e.touches.length === 2 && isPinching.current && pinchStartDistance.current !== null) {
+            e.preventDefault(); // Prevent scrolling while pinching
+            const currentDistance = getTouchDistance(e.touches[0], e.touches[1]);
+            const scaleChange = currentDistance / pinchStartDistance.current;
+            const newScale = Math.max(0.2, Math.min(1.5, pinchStartScale.current * scaleChange));
+            setScale(newScale);
+        } else if (e.touches.length === 1 && !isPinching.current) {
+            // Single touch for page swipe
+            touchEndX.current = e.touches[0].clientX;
+        }
     };
 
     const onTouchEnd = () => {
-        if (!touchStartX.current || !touchEndX.current) return;
+        // Only handle swipe if not pinching
+        if (!isPinching.current && touchStartX.current !== null && touchEndX.current !== null) {
+            const distance = touchStartX.current - touchEndX.current;
+            const minSwipeDistance = 50;
 
-        const distance = touchStartX.current - touchEndX.current;
-        const minSwipeDistance = 50;
-
-        if (distance > minSwipeDistance) {
-            // Swiped Left -> Next
-            goToNextPage();
-        } else if (distance < -minSwipeDistance) {
-            // Swiped Right -> Prev
-            goToPrevPage();
+            if (distance > minSwipeDistance) {
+                // Swiped Left -> Next
+                goToNextPage();
+            } else if (distance < -minSwipeDistance) {
+                // Swiped Right -> Prev
+                goToPrevPage();
+            }
         }
 
+        // Reset all touch states
         touchStartX.current = null;
         touchEndX.current = null;
+        pinchStartDistance.current = null;
+        isPinching.current = false;
     };
 
     if (!mounted) return null;
@@ -215,10 +259,11 @@ export const PDFViewer = ({ isOpen, onClose, pdfUrl }: PDFViewerProps) => {
 
                     {/* Book Content */}
                     <div
-                        className="w-full h-full pt-16 pb-20 flex items-center justify-center overflow-hidden touch-pan-y"
+                        className="w-full h-full pt-16 pb-20 flex items-center justify-center overflow-hidden"
                         onTouchStart={onTouchStart}
                         onTouchMove={onTouchMove}
                         onTouchEnd={onTouchEnd}
+                        style={{ touchAction: 'pan-y pinch-zoom' }}
                     >
                         <Document
                             file={pdfUrl}
