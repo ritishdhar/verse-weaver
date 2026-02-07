@@ -30,7 +30,7 @@ export const PromoNotification = () => {
     return (
         <AnimatePresence>
             {isVisible && !isDismissed && (
-                <div className="fixed inset-x-0 bottom-6 z-[60] flex justify-center px-4 pointer-events-none">
+                <div className="fixed inset-x-0 bottom-6 z-[60] flex justify-center md:justify-end md:left-auto md:right-6 px-4 pointer-events-none">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}

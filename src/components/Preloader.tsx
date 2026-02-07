@@ -1,19 +1,29 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 
+const PRELOADER_IMAGES = [
+    '/images/preloader-1.png',
+    '/images/preloader-2.png',
+    '/images/preloader-3.png',
+    '/images/preloader-4.png',
+];
+
+const CYCLE_MS = 180; // fast image change
+
 export const Preloader = () => {
     const [progress, setProgress] = useState(0);
     const [isComplete, setIsComplete] = useState(false);
+    const [imageIndex, setImageIndex] = useState(0);
 
     useEffect(() => {
-        const duration = 1500; // 1.5 seconds total
-        const interval = 16; // 60fps roughly
+        const duration = 1500;
+        const interval = 16;
         const step = 100 / (duration / interval);
 
-        const timer = setInterval(() => {
+        const progressTimer = setInterval(() => {
             setProgress((prev) => {
                 if (prev >= 100) {
-                    clearInterval(timer);
+                    clearInterval(progressTimer);
                     setTimeout(() => setIsComplete(true), 300);
                     return 100;
                 }
@@ -21,11 +31,15 @@ export const Preloader = () => {
             });
         }, interval);
 
-        // Safety fallback: force complete after 4 seconds
+        const imageTimer = setInterval(() => {
+            setImageIndex((i) => (i + 1) % PRELOADER_IMAGES.length);
+        }, CYCLE_MS);
+
         const fallback = setTimeout(() => setIsComplete(true), 4000);
 
         return () => {
-            clearInterval(timer);
+            clearInterval(progressTimer);
+            clearInterval(imageTimer);
             clearTimeout(fallback);
         };
     }, []);
@@ -61,23 +75,43 @@ export const Preloader = () => {
                         />
                     </div>
 
-
-
-                    {/* Loader Content - percentage and bar only */}
-                    <div className="relative text-center">
-                        <motion.span
-                            className="block font-display text-8xl md:text-9xl text-white font-bold tracking-tighter"
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
+                    {/* Character: same position, fast-cycling images + float */}
+                    <div className="relative flex flex-col items-center gap-10">
+                        <motion.div
+                            className="relative w-32 h-32 md:w-40 md:h-40 flex items-center justify-center"
+                            animate={{
+                                y: [0, -12, 0],
+                            }}
+                            transition={{
+                                duration: 1.2,
+                                repeat: Infinity,
+                                ease: 'easeInOut',
+                            }}
                         >
-                            {Math.round(progress)}%
-                        </motion.span>
+                            {PRELOADER_IMAGES.map((src, i) => (
+                                <AnimatePresence mode="wait" key={src}>
+                                    {imageIndex === i && (
+                                        <motion.img
+                                            src={src}
+                                            alt=""
+                                            className="absolute inset-0 w-full h-full object-contain object-center pointer-events-none"
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            exit={{ opacity: 0 }}
+                                            transition={{ duration: 0.08 }}
+                                        />
+                                    )}
+                                </AnimatePresence>
+                            ))}
+                        </motion.div>
 
-                        {/* Progress Bar Container */}
-                        <div className="mt-8 w-48 md:w-64 h-[2px] bg-white/10 mx-auto relative overflow-hidden rounded-full">
+                        {/* Loading bar only */}
+                        <div className="w-48 md:w-64 h-1.5 bg-white/10 rounded-full overflow-hidden">
                             <motion.div
-                                className="absolute top-0 left-0 h-full bg-zine-pink"
+                                className="h-full bg-zine-pink rounded-full"
+                                initial={{ width: 0 }}
                                 style={{ width: `${progress}%` }}
+                                transition={{ duration: 0.1 }}
                             />
                         </div>
                     </div>
